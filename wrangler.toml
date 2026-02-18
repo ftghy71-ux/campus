@@ -1,0 +1,13 @@
+# Cloudflare deployment instructions:
+# 1) Install Wrangler CLI: npm install -g wrangler
+# 2) Authenticate: wrangler login
+# 3) Install Python deps: pip install -r requirements.txt
+# 4) Deploy: wrangler deploy
+# 5) Optional local dev: wrangler dev
+
+name = "transport-backend"
+main = "worker.py"
+compatibility_date = "2026-01-01"
+
+[build]
+command = "pip install -r requirements.txt"

@@ -1,6 +1,7 @@
 Flask==3.1.0
 gunicorn==21.2.0
 gevent==24.11.1
+asgiref==3.8.1
 fido2==1.1.0
 Flask-Cors==6.0.2
 psutil==6.1.0
