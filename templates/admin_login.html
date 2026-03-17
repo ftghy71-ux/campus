@@ -62,6 +62,7 @@
         }
         input:focus { border-color: rgba(215, 194, 255, 0.60); }
         button {
+            position: relative;
             margin-top: 12px;
             padding: 10px 12px;
             border-radius: 999px;
@@ -70,9 +71,48 @@
             color: var(--text);
             cursor: pointer;
             font-weight: 600;
-            transition: transform .18s ease, border-color .18s ease, filter .18s ease;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform .2s cubic-bezier(0.2, 0, 0, 1), border-color .2s ease, filter .2s ease, box-shadow .2s ease, opacity .2s ease;
         }
-        button:hover { transform: translateY(-1px); filter: brightness(1.05); }
+        button:hover:not(:disabled) { 
+            transform: translateY(-1px); 
+            filter: brightness(1.1); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+        }
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            filter: grayscale(20%);
+        }
+        
+        /* Loading Animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        button.is-loading {
+            pointer-events: none;
+            opacity: 0.8 !important;
+            filter: grayscale(30%);
+        }
+        button.is-loading .spinner {
+            display: inline-block;
+        }
         .toggle-btn {
             margin-top: 0;
             min-width: 74px;
@@ -117,7 +157,7 @@
             border-color: #2b3b58 !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
-            box-shadow: 0 10px 24px rgba(4, 10, 24, 0.48) !important;
+            box-shadow: 0 16px 40px rgba(2, 6, 15, 0.6), inset 0 1px 0 rgba(255,255,255,0.05) !important;
         }
         input {
             background: #0f1728 !important;
@@ -170,10 +210,12 @@
             background: #0f1728;
             color: #e6eef8;
             outline: none;
+            transition: all 0.2s ease;
         }
         .pin-cell:focus {
-            border-color: rgba(215, 194, 255, 0.72);
-            box-shadow: 0 0 0 1px rgba(215, 194, 255, 0.32);
+            border-color: rgba(215, 194, 255, 0.85);
+            box-shadow: 0 0 0 2px rgba(215, 194, 255, 0.35), 0 0 12px rgba(215, 194, 255, 0.15);
+            transform: translateY(-2px);
         }
         .role-links {
             margin-top: 14px;
@@ -223,13 +265,13 @@
         {% if error_text %}
         <div class="error-box">{{ error_text }}</div>
         {% endif %}
-        <form id="adminAuthForm" method="POST" action="{{ url_for('admin_verify_pin') if require_gold_pin else url_for('admin_login') }}" autocomplete="on">
+        <form id="adminAuthForm" name="login" method="POST" action="{{ url_for('admin_verify_pin') if require_gold_pin else url_for('admin_login') }}" autocomplete="on">
             <div id="primary-login-fields" {% if require_gold_pin %}hidden{% endif %}>
                 <label>Campus Transport System-Admin Login</label>
                 <input name="institute_name" placeholder="E.g. Your Institute" value="{{ institute_name | default('') }}" autocomplete="organization">
 
                 <label>Admin Username</label>
-                <input type="text" name="username" placeholder="admin" {% if not require_gold_pin %}required{% endif %} autocomplete="username" autocapitalize="off" spellcheck="false">
+                <input type="text" name="username" placeholder="admin" value="{{ pending_gold_username or '' }}" {% if not require_gold_pin %}required{% endif %} autocomplete="username" autocapitalize="off" spellcheck="false">
 
                 <label>Password</label>
                 <div style="display:flex; gap:8px; align-items:center">
@@ -261,8 +303,12 @@
                 <div class="note" style="margin-top:6px">Enter the configured 6-digit signup pin.</div>
             </div>
             <input type="hidden" name="action" id="actionField" value="login">
-            <button type="submit" class="primary-btn" onclick="return preparePrimarySubmit()">{% if require_gold_pin %}Verify Pin{% else %}Login{% endif %}</button>
-            <button type="button" class="secondary-btn" id="createBtn" onclick="submitSignup()" {% if require_gold_pin %}hidden{% endif %}>Create Account</button>
+            <button type="submit" class="primary-btn" id="primarySubmitBtn" onclick="return preparePrimarySubmit()">
+                <div class="spinner"></div><span class="btn-text">{% if require_gold_pin %}Verify Pin{% else %}Login{% endif %}</span>
+            </button>
+            <button type="button" class="secondary-btn" id="createBtn" onclick="submitSignup()" {% if require_gold_pin %}hidden{% endif %}>
+                <div class="spinner"></div><span class="btn-text">Create Account</span>
+            </button>
         </form>
         <script>
         const requireGoldPin = (document.body.dataset.requireGoldPin || 'false') === 'true';
@@ -328,6 +374,16 @@
             });
             focusPinCell(0);
         }
+        function setLoadingState(btnId, isLoading) {
+            const btn = document.getElementById(btnId);
+            if(btn) {
+                if(isLoading) {
+                    btn.classList.add('is-loading');
+                } else {
+                    btn.classList.remove('is-loading');
+                }
+            }
+        }
         function preparePrimarySubmit(){
             const actionField = document.getElementById('actionField');
             if(requireGoldPin){
@@ -369,6 +425,19 @@
         }
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('adminAuthForm');
+            if(form) {
+                form.addEventListener('submit', (e) => {
+                    // Only trigger loading if the event isn't cancelled
+                    if (e.defaultPrevented) return;
+                    
+                    const action = document.getElementById('actionField').value;
+                    if (action === 'login' || action === 'verify_gold_pin') {
+                        setLoadingState('primarySubmitBtn', true);
+                    } else if (action === 'signup') {
+                        setLoadingState('createBtn', true);
+                    }
+                });
+            }
             if(form && requireGoldPin){
                 form.addEventListener('submit', () => {
                     syncLoginPinHidden();

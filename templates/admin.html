@@ -1770,6 +1770,36 @@
         #perfAuditTable .status-failed, #perfAuditTable .status-error { color:#ff7b8a; font-weight:600; }
 
         cursor-info { font-size:11px; color:#667eea; text-align:center; margin-top:8px; display:block }
+        
+        .auth-btn {
+            display: inline-block;
+            background: rgba(255, 123, 138, 0.1);
+            color: #ff9aa2;
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 123, 138, 0.25);
+            transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .auth-btn:hover {
+            background: rgba(255, 123, 138, 0.2);
+            color: #ffb3b9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 123, 138, 0.15);
+        }
+        .auth-login-btn {
+            background: rgba(102, 126, 234, 0.1);
+            color: #9ab4ff;
+            border-color: rgba(102, 126, 234, 0.25);
+        }
+        .auth-login-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            color: #b3c7ff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
     </style>
 </head>
 <body
@@ -1843,13 +1873,13 @@
                 <button id="openAdminLogBtn" style="margin-right:12px;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;background:#8f6a19;color:#fff3d0">Admin Log</button>
                 {% endif %}
                 {% if admin_user %}
-                    <span style="color:#9aa4b2; margin-right:8px">{{ admin_user }}</span>
+                    <span style="color:#9aa4b2; margin-right:8px; vertical-align:middle;">{{ admin_user }}</span>
                     {% if is_gold_admin %}
-                        <span class="gold-badge">GOLD ADMIN</span>
+                        <span class="gold-badge" style="vertical-align:middle;">GOLD ADMIN</span>
                     {% endif %}
-                    <a href="/admin/logout" style="color:#ff9aa2; text-decoration:none">Logout</a>
+                    <a href="/admin/logout" class="auth-btn">Logout</a>
                 {% else %}
-                    <a href="/admin/login" style="color:#9aa4b2; text-decoration:none">Admin Login</a>
+                    <a href="/admin/login" class="auth-btn auth-login-btn">Admin Login</a>
                 {% endif %}
             </div>
         </div>
@@ -2521,19 +2551,26 @@
         <!-- ROUTES TAB -->
         <div id="routes" class="tab-content">
             <div class="route-builder">
-                <div class="route-sidebar">
-                    <div id="routeSidebarEmpty" class="route-sidebar-empty" aria-hidden="true">
-                        <div class="route-empty-card route-empty-card-main"></div>
-                        <div class="route-empty-grid">
-                            <div class="route-empty-tile"></div>
-                            <div class="route-empty-tile"></div>
-                            <div class="route-empty-tile"></div>
-                            <div class="route-empty-tile"></div>
+                <div class="route-sidebar" style="display:flex; flex-direction:column; padding-right:12px; height:100%;">
+                    <!-- Global Route Controls -->
+                    <div class="route-panel" style="margin-bottom: 16px; flex:none; padding:20px;">
+                        <h3 style="margin:0 0 16px 0; font-size:16px; color:#e6eef8;">Route Management</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <button id="openRoutesOverlayBtn" type="button" class="route-routes-btn" title="View your routes" style="width:100%; justify-content:center; padding:12px; background:rgba(102,126,234,0.1); border-color:rgba(102,126,234,0.3); color:#c7d2fe;">Your Routes</button>
+                            <button id="createRouteStartBtn" type="button" class="route-create-btn" style="width:100%; justify-content:center; padding:12px; background:rgba(52,211,153,0.1); border-color:rgba(52,211,153,0.3); color:#a7f3d0;">Create Route</button>
+                            <span id="routeLiveBadge" class="route-live-badge" hidden style="justify-content:center;">Creation mode</span>
+                            
+                            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.06); margin:8px 0;">
+                            
+                            <div style="display:flex; gap:8px;">
+                                <button id="routesExportBtn" type="button" class="route-tablet-btn" style="flex:1; justify-content:center;">Export</button>
+                                <button id="routesImportBtn" type="button" class="route-tablet-btn" style="flex:1; justify-content:center;">Import</button>
+                                <input id="routesImportFile" type="file" accept=".json,application/json" hidden>
+                            </div>
                         </div>
-                        <div class="route-empty-card route-empty-card-wide"></div>
-                        <div class="route-empty-card route-empty-card-wide"></div>
                     </div>
-                    <div id="routeCreationPane" class="route-panel route-creation-pane" hidden>
+
+                    <div id="routeCreationPane" class="route-panel route-creation-pane" hidden style="flex:1; display:flex; flex-direction:column;">
                         <h3 style="margin:0 0 16px 0; font-size:15px">Route Details</h3>
                         
                         <!-- Step Indicator -->
@@ -2673,21 +2710,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="route-map-column">
-                    <div class="route-map-head">
-                        <div class="route-view-actions">
-                            <button id="openRoutesOverlayBtn" type="button" class="route-routes-btn" title="View your routes">Your Routes</button>
-                            <button id="createRouteStartBtn" type="button" class="route-create-btn">Create Route</button>
-                            <span id="routeLiveBadge" class="route-live-badge" hidden>Creation mode</span>
-                        </div>
-                        <div class="route-map-toolbar route-map-toolbar-inline">
-                            <button id="routesExportBtn" type="button" class="route-tablet-btn">Export Routes</button>
-                            <button id="routesImportBtn" type="button" class="route-tablet-btn">Import Routes</button>
-                            <input id="routesImportFile" type="file" accept=".json,application/json" hidden>
-                        </div>
-                    </div>
-                    <div class="route-map-section">
-                        <div id="routeMap"></div>
+                <div class="route-map-column" style="height:100%; display:flex; flex-direction:column;">
+                    <div class="route-map-section" style="flex:1;">
+                        <div id="routeMap" style="height:100%;"></div>
                         <cursor-info id="cursorInfo" hidden>Click on map | First click = Start Point | Next clicks = Stops</cursor-info>
                     </div>
                     <div id="routeIoStatus" class="route-io-status"></div>
@@ -2731,31 +2756,26 @@
         <!-- TRANSPORTS TAB -->
         <div id="buses" class="tab-content">
             <div class="admin-student-shell">
-                <aside class="admin-shell-sidebar" aria-hidden="true">
-                    <div class="admin-shell-tiles">
-                        <div class="admin-shell-tile admin-shell-tile-main"></div>
-                        <div class="admin-shell-tile-grid">
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
+                <aside class="admin-shell-sidebar" style="display:flex; flex-direction:column; padding-right:12px;">
+                    <div class="route-panel" style="margin-bottom: 16px; flex:none; padding:20px;">
+                        <h3 style="margin:0 0 16px 0; font-size:16px; color:#e6eef8;">Manage Transports</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <input id="newBusNum" placeholder="Number (e.g. 21)" style="width:100%; padding:10px; border-radius:8px;">
+                            <input id="newLat" placeholder="Latitude" style="width:100%; padding:10px; border-radius:8px;">
+                            <input id="newLng" placeholder="Longitude" style="width:100%; padding:10px; border-radius:8px;">
+                            <button id="addBtn" class="ok" style="width:100%; justify-content:center; padding:12px; background:rgba(52,211,153,0.1); border-color:rgba(52,211,153,0.3); color:#a7f3d0;">Add Transport</button>
+                            
+                            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.06); margin:8px 0;">
+                            
+                            <div style="display:flex; gap:8px;">
+                                <button id="refreshBtn" style="flex:1; justify-content:center; padding:10px;">Refresh</button>
+                                <button id="clearAllBtn" class="danger" style="flex:1; justify-content:center; padding:10px; background:rgba(255,123,138,0.1); border-color:rgba(255,123,138,0.3); color:#fecdd3;">Clear All</button>
+                            </div>
                         </div>
-                        <div class="admin-shell-tile admin-shell-tile-wide"></div>
                     </div>
                 </aside>
-                <section class="admin-shell-main">
-                    <div class="admin-shell-surface">
-                        <div class="controls">
-                            <input id="newBusNum" placeholder="Transport number (e.g. 21)" style="width:140px">
-                            <input id="newLat" placeholder="Latitude" style="width:160px">
-                            <input id="newLng" placeholder="Longitude" style="width:160px">
-                            <button id="addBtn" class="ok">Add Transport</button>
-                            <div style="flex:1"></div>
-                            <button id="refreshBtn">Refresh</button>
-                            <button id="clearAllBtn" class="danger">Clear All</button>
-                        </div>
-                    </div>
-                    <div class="admin-shell-surface">
+                <section class="admin-shell-main" style="display:flex; flex-direction:column;">
+                    <div class="admin-shell-surface" style="flex:1; overflow:auto;">
                         <div id="busList">
                             <div class="empty">Loading transports...</div>
                         </div>
@@ -2767,58 +2787,41 @@
         <!-- BUILDINGS TAB -->
         <div id="buildings" class="tab-content">
             <div class="admin-student-shell">
-                <aside class="admin-shell-sidebar" aria-hidden="true">
-                    <div class="admin-shell-tiles">
-                        <div class="admin-shell-tile admin-shell-tile-main"></div>
-                        <div class="admin-shell-tile-grid">
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
+                <aside class="admin-shell-sidebar" style="display:flex; flex-direction:column; padding-right:12px; gap:16px;">
+                    <!-- HOSTELS -->
+                    <div class="route-panel" style="padding:20px; flex:none;">
+                        <h3 style="margin:0 0 16px 0; font-size:16px; color:#e6eef8;"><span class="icon">H</span> Add Hostel</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px">
+                            <input id="hostelName" placeholder="Name (e.g. Block A)" style="width:100%; padding:10px; border-radius:8px;">
+                            <input id="hostelCapacity" placeholder="Capacity" style="width:100%; padding:10px; border-radius:8px;" value="100">
+                            <button id="addHostelBtn" class="ok" style="width:100%; justify-content:center; padding:12px; background:rgba(52,211,153,0.1); border-color:rgba(52,211,153,0.3); color:#a7f3d0;">+ Place on Map</button>
                         </div>
-                        <div class="admin-shell-tile admin-shell-tile-wide"></div>
+                        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.06); margin:12px 0;">
+                        <div class="field-label">Hostels (<span id="hostelCount">0</span>)</div>
+                        <div id="hostelsList" style="max-height:200px; overflow-y:auto; background:#0d1117; border-radius:8px; padding:8px; margin-top:8px;">
+                            <div class="empty" style="padding:10px">Click map to add</div>
+                        </div>
+                    </div>
+
+                    <!-- CLASSES -->
+                    <div class="route-panel" style="padding:20px; flex:none;">
+                        <h3 style="margin:0 0 16px 0; font-size:16px; color:#e6eef8;"><span class="icon">C</span> Add Class</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px">
+                            <input id="className" placeholder="Name (e.g. A-101)" style="width:100%; padding:10px; border-radius:8px;">
+                            <input id="classDept" placeholder="Department" style="width:100%; padding:10px; border-radius:8px;">
+                            <button id="addClassBtn" class="ok" style="width:100%; justify-content:center; padding:12px; background:rgba(52,211,153,0.1); border-color:rgba(52,211,153,0.3); color:#a7f3d0;">+ Place on Map</button>
+                        </div>
+                        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.06); margin:12px 0;">
+                        <div class="field-label">Classes (<span id="classCount">0</span>)</div>
+                        <div id="classesList" style="max-height:200px; overflow-y:auto; background:#0d1117; border-radius:8px; padding:8px; margin-top:8px;">
+                            <div class="empty" style="padding:10px">Click map to add</div>
+                        </div>
                     </div>
                 </aside>
-                <section class="admin-shell-main">
-                    <div class="admin-shell-surface">
-                        <div class="admin-buildings-layout">
-                            <!-- MAP -->
-                            <div>
-                                <div class="field-label" style="margin-bottom:8px"><span class="icon">B</span> Click to place building</div>
-                                <div id="buildingsMap" class="admin-shell-map"></div>
-                            </div>
-
-                            <!-- CONTROLS -->
-                            <div class="admin-buildings-col">
-                                <!-- HOSTELS -->
-                                <div class="route-panel">
-                                    <h3 style="margin:0 0 12px 0; font-size:14px"><span class="icon">H</span> Add Hostel</h3>
-                                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px">
-                                        <input id="hostelName" placeholder="Name (e.g. Block A)" style="width:100%; font-size:12px; padding:6px 8px">
-                                        <input id="hostelCapacity" placeholder="Capacity" style="width:100%; font-size:12px; padding:6px 8px" value="100">
-                                        <button id="addHostelBtn" class="ok" style="background:rgba(52,211,153,0.1); font-size:12px; padding:6px">+ Place on Map</button>
-                                    </div>
-                                    <div class="field-label">Hostels (<span id="hostelCount">0</span>)</div>
-                                    <div id="hostelsList" style="max-height:200px; overflow-y:auto; background:#0d1117; border-radius:6px; padding:8px">
-                                        <div class="empty" style="font-size:12px; padding:10px">Click map to add</div>
-                                    </div>
-                                </div>
-
-                                <!-- CLASSES -->
-                                <div class="route-panel">
-                                    <h3 style="margin:0 0 12px 0; font-size:14px"><span class="icon">C</span> Add Class</h3>
-                                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px">
-                                        <input id="className" placeholder="Name (e.g. A-101)" style="width:100%; font-size:12px; padding:6px 8px">
-                                        <input id="classDept" placeholder="Department" style="width:100%; font-size:12px; padding:6px 8px">
-                                        <button id="addClassBtn" class="ok" style="background:rgba(52,211,153,0.1); font-size:12px; padding:6px">+ Place on Map</button>
-                                    </div>
-                                    <div class="field-label">Classes (<span id="classCount">0</span>)</div>
-                                    <div id="classesList" style="max-height:200px; overflow-y:auto; background:#0d1117; border-radius:6px; padding:8px">
-                                        <div class="empty" style="font-size:12px; padding:10px">Click map to add</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <section class="admin-shell-main" style="display:flex; flex-direction:column;">
+                    <div class="admin-shell-surface" style="flex:1; display:flex; flex-direction:column; padding:20px;">
+                        <div class="field-label" style="margin-bottom:12px; font-size:15px; display:flex; align-items:center; gap:8px;"><span class="icon" style="background:rgba(102,126,234,0.15); color:#c7d2fe;">B</span> Click map to place currently active building</div>
+                        <div id="buildingsMap" class="admin-shell-map" style="flex:1; border-radius:12px; margin:0; border:1px solid rgba(255,255,255,0.08);"></div>
                     </div>
                 </section>
             </div>
@@ -2827,39 +2830,52 @@
         <!-- SERVER PERFORMANCE TAB -->
         <div id="serverPerf" class="tab-content">
             <div class="admin-student-shell">
-                <aside class="admin-shell-sidebar" aria-hidden="true">
-                    <div class="admin-shell-tiles">
-                        <div class="admin-shell-tile admin-shell-tile-main"></div>
-                        <div class="admin-shell-tile-grid">
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
+                <aside class="admin-shell-sidebar" style="display:flex; flex-direction:column; padding-right:12px; gap:16px;">
+                    <div class="route-panel" style="padding:20px; flex:none;">
+                        <h3 style="margin:0 0 16px 0; font-size:16px; color:#e6eef8;">Server Controls</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <div class="small" style="line-height:1.4;">{% if is_gold_admin %}Live server telemetry and admin audit logs{% else %}Live server telemetry{% endif %}</div>
+                            <div style="font-size:12px; color:#c7d2fe; display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+                                <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2;">System Live:</span> <span id="perfSystemLiveTime">--:--:--</span></div>
+                                <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2;">Graph Time:</span> <span id="perfGraphTime">--:--:--</span></div>
+                            </div>
+                            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.06); margin:8px 0;">
+                            {% if is_gold_admin %}
+                            <button id="perfExportMdBtn" class="route-tablet-btn" style="width:100%; justify-content:center;">Export .md</button>
+                            <button id="perfExportTxtBtn" class="route-tablet-btn" style="width:100%; justify-content:center;">Export .txt</button>
+                            <button id="auditSaveViewBtn" class="route-tablet-btn" style="width:100%; justify-content:center;">Save View</button>
+                            {% endif %}
+                            <button id="perfRefreshBtn" class="ok" style="width:100%; justify-content:center; padding:12px; background:rgba(102,126,234,0.1); border-color:rgba(102,126,234,0.3); color:#c7d2fe;">Refresh Data</button>
                         </div>
-                        <div class="admin-shell-tile admin-shell-tile-wide"></div>
+                    </div>
+
+                    <div class="route-panel" style="padding:20px; flex:none;">
+                        <h3 style="margin:0 0 16px 0; font-size:16px; color:#e6eef8;">Admin Login Info</h3>
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Current Admin</span><span id="perfCurrentAdmin" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Accounts</span><span id="perfAdminCount" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Success Logins</span><span id="perfLoginSuccess" style="color:#34d399; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Failed Logins</span><span id="perfLoginFailed" style="color:#f87171; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Last Success</span><span id="perfLastLoginSuccess" style="color:#fff; font-size:11px;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Last Failed</span><span id="perfLastLoginFailed" style="color:#fff; font-size:11px;">--</span></div>
+                        </div>
+                    </div>
+
+                    <div class="route-panel" style="padding:20px; flex:none;">
+                        <h3 style="margin:0 0 16px 0; font-size:16px; color:#e6eef8;">Server Snapshot</h3>
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Transports</span><span id="perfBusesCount" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Active Drivers</span><span id="perfActiveDrivers" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Routes</span><span id="perfRoutesCount" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Hostels</span><span id="perfHostelsCount" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Classes</span><span id="perfClassesCount" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Active Students</span><span id="perfActiveStudents" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Active Admins</span><span id="perfActiveAdmins" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                        </div>
                     </div>
                 </aside>
-                <section class="admin-shell-main">
-            <div class="controls" style="justify-content:space-between; margin-bottom:14px">
-                <div>
-                    <div class="small">{% if is_gold_admin %}Live server telemetry and admin audit logs{% else %}Live server telemetry{% endif %}</div>
-                    <div class="perf-live-time" aria-live="polite">
-                        <span class="label">System Live Time</span>
-                        <span id="perfSystemLiveTime" class="value">--:--:--</span>
-                        <span class="sep">|</span>
-                        <span class="label">Graph Time</span>
-                        <span id="perfGraphTime" class="value">--:--:--</span>
-                    </div>
-                </div>
-                <div>
-                    {% if is_gold_admin %}
-                    <button id="perfExportMdBtn">Export .md</button>
-                    <button id="perfExportTxtBtn">Export .txt</button>
-                    <button id="auditSaveViewBtn">Save View</button>
-                    {% endif %}
-                    <button id="perfRefreshBtn">Refresh</button>
-                </div>
-            </div>
+                <section class="admin-shell-main" style="display:flex; flex-direction:column; overflow:auto;">
+                    <div style="padding:20px;">
 
             <div class="perf-grid">
                 <div class="perf-card">
@@ -2949,70 +2965,7 @@
                 </div>
             </div>
 
-            <div class="perf-two-col">
-                <div class="audit-wrap">
-                    <h3 style="margin:0 0 10px 0; font-size:14px">Admin Login Info</h3>
-                    <div class="perf-grid" style="margin-bottom:0">
-                        <div class="perf-card">
-                            <div class="perf-k">Current Admin</div>
-                            <div class="perf-v" id="perfCurrentAdmin">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Admin Accounts</div>
-                            <div class="perf-v" id="perfAdminCount">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Successful Logins</div>
-                            <div class="perf-v" id="perfLoginSuccess">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Failed Logins</div>
-                            <div class="perf-v" id="perfLoginFailed">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Last Successful Login</div>
-                            <div class="perf-v small" id="perfLastLoginSuccess">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Last Failed Login</div>
-                            <div class="perf-v small" id="perfLastLoginFailed">--</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="audit-wrap">
-                    <h3 style="margin:0 0 10px 0; font-size:14px">Server Snapshot</h3>
-                    <div class="perf-grid" style="margin-bottom:0">
-                        <div class="perf-card">
-                            <div class="perf-k">Transports</div>
-                            <div class="perf-v" id="perfBusesCount">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Active Drivers</div>
-                            <div class="perf-v" id="perfActiveDrivers">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Routes</div>
-                            <div class="perf-v" id="perfRoutesCount">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Hostels</div>
-                            <div class="perf-v" id="perfHostelsCount">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Classes</div>
-                            <div class="perf-v" id="perfClassesCount">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Active Students</div>
-                            <div class="perf-v" id="perfActiveStudents">--</div>
-                        </div>
-                        <div class="perf-card">
-                            <div class="perf-k">Active Admins</div>
-                            <div class="perf-v" id="perfActiveAdmins">--</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Moved to sidebar -->
 
             {% if is_gold_admin %}
             <div class="audit-wrap">
@@ -3042,47 +2995,31 @@
         {% if is_gold_admin %}
         <div id="adminConsole" class="tab-content">
             <div class="admin-student-shell">
-                <aside class="admin-shell-sidebar" aria-hidden="true">
-                    <div class="admin-shell-tiles">
-                        <div class="admin-shell-tile admin-shell-tile-main"></div>
-                        <div class="admin-shell-tile-grid">
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
-                            <div class="admin-shell-tile"></div>
+                <aside class="admin-shell-sidebar" style="display:flex; flex-direction:column; padding-right:12px; gap:16px;">
+                    <div class="route-panel" style="padding:20px; flex:none;">
+                        <h3 style="margin:0 0 16px 0; font-size:16px; color:#e6eef8;">Console Controls</h3>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <div class="small" style="line-height:1.4;">Dedicated log of admin activity across the panel</div>
+                            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.06); margin:8px 0;">
+                            <button id="adminConsoleExportTxtBtn" class="route-tablet-btn" style="width:100%; justify-content:center;">Export .txt</button>
+                            <button id="adminConsoleExportJsonBtn" class="route-tablet-btn" style="width:100%; justify-content:center;">Export .json</button>
+                            <button id="adminConsoleSaveViewBtn" class="route-tablet-btn" style="width:100%; justify-content:center;">Save View</button>
+                            <button id="adminConsoleRefreshBtn" class="ok" style="width:100%; justify-content:center; padding:12px; background:rgba(102,126,234,0.1); border-color:rgba(102,126,234,0.3); color:#c7d2fe;">Refresh Data</button>
                         </div>
-                        <div class="admin-shell-tile admin-shell-tile-wide"></div>
+                    </div>
+                    
+                    <div class="route-panel" style="padding:20px; flex:none;">
+                        <h3 style="margin:0 0 16px 0; font-size:16px; color:#e6eef8;">Activity Summary</h3>
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Total Activity</span><span id="consoleTotalActivity" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Returned Entries</span><span id="consoleReturnedActivity" style="color:#fff; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Success Events</span><span id="consoleSuccessCount" style="color:#34d399; font-size:13px; font-weight:500;">--</span></div>
+                            <div style="display:flex; justify-content:space-between;"><span style="color:#9aa4b2; font-size:12px;">Failed/Errors</span><span id="consoleFailedCount" style="color:#f87171; font-size:13px; font-weight:500;">--</span></div>
+                        </div>
                     </div>
                 </aside>
-                <section class="admin-shell-main">
-            <div class="controls" style="justify-content:space-between; margin-bottom:14px">
-                <div class="small">Dedicated log of admin activity across the panel</div>
-                <div>
-                    <button id="adminConsoleExportTxtBtn">Export .txt</button>
-                    <button id="adminConsoleExportJsonBtn">Export .json</button>
-                    <button id="adminConsoleSaveViewBtn">Save View</button>
-                    <button id="adminConsoleRefreshBtn">Refresh</button>
-                </div>
-            </div>
-
-            <div class="perf-grid" style="margin-bottom:12px">
-                <div class="perf-card">
-                    <div class="perf-k">Total Activity (Window)</div>
-                    <div class="perf-v" id="consoleTotalActivity">--</div>
-                </div>
-                <div class="perf-card">
-                    <div class="perf-k">Returned Entries</div>
-                    <div class="perf-v" id="consoleReturnedActivity">--</div>
-                </div>
-                <div class="perf-card">
-                    <div class="perf-k">Success Events</div>
-                    <div class="perf-v" id="consoleSuccessCount">--</div>
-                </div>
-                <div class="perf-card">
-                    <div class="perf-k">Failed/Error Events</div>
-                    <div class="perf-v" id="consoleFailedCount">--</div>
-                </div>
-            </div>
+                <section class="admin-shell-main" style="display:flex; flex-direction:column; overflow:auto;">
+                    <div style="padding:20px; flex:1;">
 
             <div class="audit-wrap">
                 <h3 style="margin:0 0 10px 0; font-size:14px">Admin Activity Stream</h3>
